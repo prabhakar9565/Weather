@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Wizard</title>
+    
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Add SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.5/dist/sweetalert2.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(120deg, #3498db, #8e44ad); /* Refined gradient background */
+            color: #ffffff; /* White text color */
+            margin: 0; /* Remove default margin to fill the whole viewport */
+            height: 100vh; /* Set the body height to full viewport height */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #ffffff; /* White text color */
+            margin-bottom: 20px; /* Add some margin to the bottom of the heading */
+        }
+
+        #weather-container {
+            margin-top: 50px;
+        }
+
+        #weather-info {
+            display: none; /* Initially hide the result container */
+            background-color: #ffffff; /* White background for weather info */
+            color: #000000; /* Black text color */
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
+        }
+
+        /* Custom animation class */
+        @keyframes weatherAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Apply animation to weather-info div */
+        #weather-info.animated {
+            animation: weatherAnimation 1s infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Weather Report</h1>
+
+    <div class="container" id="weather-container">
+        <label for="city">Enter city name: </label>
+        <input type="text" class="form-control" id="city" placeholder="Enter city">
+        <button class="btn btn-primary mt-3" onclick="getWeather()">Get Weather</button>
+
+        <div id="weather-info" class="mt-3"></div>
+    </div>
+
+    <!-- Add SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.5/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Add Bootstrap JS and Popper.js (required for Bootstrap dropdowns) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function getWeather() {
+            const apiKey = '5076e43e647f494da60ca4e409801aa7';
+            const city = document.getElementById('city').value;
+
+            if (!city) {
+                // Use SweetAlert for a stylish alert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter a city name!',
+                });
+                return;
+            }
+
+            const apiUrl = `https://api.weatherbit.io/v2.0/current?city=${city}&key=${apiKey}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const weatherInfo = document.getElementById('weather-info');
+
+                    const temperature = data.data[0].temp;
+                    const description = data.data[0].weather.description;
+
+                    const weatherHtml = `<p><strong>Current Weather:</strong></p>
+                                         <p>Temperature: ${temperature} &#8451;</p>
+                                         <p>Description: ${description}</p>`;
+
+                    weatherInfo.innerHTML = weatherHtml;
+                    weatherInfo.style.display = 'block'; // Show the result container
+                    weatherInfo.classList.add('animated'); // Add the animation class
+                })
+                .catch(error => {
+                    console.error('Error fetching weather data:', error);
+
+                    // Use SweetAlert for a stylish error alert
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Error fetching weather data. Please try again!',
+                    });
+                });
+        }
+    </script>
+
+</body>
+</html>
